@@ -43,11 +43,25 @@ module Archon
     end
 
     def define_options(opts)
+      define_prompt_options(opts)
+      define_agent_options(opts)
+      define_search_options(opts)
+    end
+
+    def define_prompt_options(opts)
       opts.on('--prompt-text TEXT', 'Prompt text') { |t| options[:prompt_text] = t }
       opts.on('--prompt-file FILE', 'Read prompt from file') { |f| options[:prompt_file] = f }
+    end
+
+    def define_agent_options(opts)
       opts.on('--overflow N', Integer, 'Max tool calls') { |n| options[:overflow] = n }
       opts.on('--model MODEL', 'Model name') { |m| options[:model] = m }
       opts.on('--provider PROVIDER', 'LLM provider') { |p| options[:provider] = p }
+    end
+
+    def define_search_options(opts)
+      opts.on('--no-web-search', 'Disable web search (Grok only)') { options[:web_search] = false }
+      opts.on('--no-x-search', 'Disable X search (Grok only)') { options[:x_search] = false }
     end
 
     def resolve_prompt
@@ -64,7 +78,12 @@ module Archon
 
     def build_client
       case options[:provider]
-      when 'grok' then LLMs::Grok::Client.new(model: options[:model])
+      when 'grok'
+        LLMs::Grok::Client.new(
+          model: options[:model],
+          web_search: options.fetch(:web_search, true),
+          x_search: options.fetch(:x_search, true)
+        )
       else abort "Unknown provider: #{options[:provider]}"
       end
     end

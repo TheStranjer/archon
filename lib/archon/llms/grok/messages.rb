@@ -4,12 +4,16 @@ module Archon
   module LLMs
     module Grok
       class Messages
-        def self.build_request(model:, messages:, tools:)
+        def self.build_request(model:, messages:, tools:, web_search: true, x_search: true)
+          all_tools = tools.dup
+          all_tools << { type: 'web_search' } if web_search
+          all_tools << { type: 'x_search' } if x_search
+
           body = {
             model: model,
             messages: messages
           }
-          body[:tools] = tools unless tools.empty?
+          body[:tools] = all_tools unless all_tools.empty?
           body
         end
 

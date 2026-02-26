@@ -14,12 +14,40 @@ RSpec.describe Archon::LLMs::Grok::Messages do
 
       expect(body[:model]).to eq('grok-4-1-fast-reasoning')
       expect(body[:messages]).to eq(messages)
-      expect(body[:tools]).to eq(tools)
+      expect(body[:tools]).to include(*tools)
+      expect(body[:tools]).to include({ type: 'web_search' }, { type: 'x_search' })
     end
 
-    it 'omits tools key when tools array is empty' do
+    it 'includes web_search and x_search tools by default' do
       body = described_class.build_request(
         model: 'grok-4-1-fast-reasoning', messages: [], tools: []
+      )
+
+      expect(body[:tools]).to include({ type: 'web_search' }, { type: 'x_search' })
+    end
+
+    it 'omits web_search when disabled' do
+      body = described_class.build_request(
+        model: 'grok-4-1-fast-reasoning', messages: [], tools: [], web_search: false
+      )
+
+      expect(body[:tools]).not_to include({ type: 'web_search' })
+      expect(body[:tools]).to include({ type: 'x_search' })
+    end
+
+    it 'omits x_search when disabled' do
+      body = described_class.build_request(
+        model: 'grok-4-1-fast-reasoning', messages: [], tools: [], x_search: false
+      )
+
+      expect(body[:tools]).to include({ type: 'web_search' })
+      expect(body[:tools]).not_to include({ type: 'x_search' })
+    end
+
+    it 'omits tools key when all tools are empty and search is disabled' do
+      body = described_class.build_request(
+        model: 'grok-4-1-fast-reasoning', messages: [], tools: [],
+        web_search: false, x_search: false
       )
 
       expect(body).not_to have_key(:tools)

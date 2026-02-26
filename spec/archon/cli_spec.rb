@@ -35,6 +35,25 @@ RSpec.describe Archon::CLI do
       expect(cli.options[:model]).to eq('grok-4-1-fast-reasoning')
       expect(cli.options[:provider]).to eq('grok')
     end
+
+    it 'parses --no-web-search' do
+      cli = described_class.new(['--no-web-search'])
+
+      expect(cli.options[:web_search]).to be(false)
+    end
+
+    it 'parses --no-x-search' do
+      cli = described_class.new(['--no-x-search'])
+
+      expect(cli.options[:x_search]).to be(false)
+    end
+
+    it 'enables web_search and x_search by default' do
+      cli = described_class.new([])
+
+      expect(cli.options).not_to have_key(:web_search)
+      expect(cli.options).not_to have_key(:x_search)
+    end
   end
 
   describe '#run' do

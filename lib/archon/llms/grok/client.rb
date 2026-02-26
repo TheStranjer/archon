@@ -9,15 +9,25 @@ module Archon
       class Client < Base
         API_URL = 'https://api.x.ai/v1/chat/completions'
 
-        def initialize(api_key: ENV.fetch('XAI_API_KEY'), model: 'grok-4-1-fast-reasoning')
+        def initialize(
+          api_key: ENV.fetch('XAI_API_KEY'),
+          model: 'grok-4-1-fast-reasoning',
+          web_search: true,
+          x_search: true
+        )
           super()
           @api_key = api_key
           @model = model
+          @web_search = web_search
+          @x_search = x_search
           @conn = build_connection
         end
 
         def chat(messages:, tools:)
-          body = Messages.build_request(model: @model, messages: messages, tools: tools)
+          body = Messages.build_request(
+            model: @model, messages: messages, tools: tools,
+            web_search: @web_search, x_search: @x_search
+          )
           response = post_request(body)
           Messages.parse_response(response.body)
         end
