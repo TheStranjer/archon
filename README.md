@@ -42,7 +42,7 @@ Output is a single JSON line:
 | `--prompt-text TEXT` | | Prompt string |
 | `--prompt-file FILE` | | Read prompt from file |
 | `--overflow N` | 10 | Max tool calls before auto-terminating |
-| `--model MODEL` | grok-3-mini | Model name |
+| `--model MODEL` | grok-4-1-fast-reasoning | Model name |
 | `--provider PROVIDER` | grok | LLM provider |
 
 ## Running tests

@@ -32,7 +32,7 @@ RSpec.describe Archon::CLI do
       cli = described_class.new([])
 
       expect(cli.options[:overflow]).to eq(10)
-      expect(cli.options[:model]).to eq('grok-3-mini')
+      expect(cli.options[:model]).to eq('grok-4-1-fast-reasoning')
       expect(cli.options[:provider]).to eq('grok')
     end
   end

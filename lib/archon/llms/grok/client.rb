@@ -9,7 +9,7 @@ module Archon
       class Client < Base
         API_URL = 'https://api.x.ai/v1/chat/completions'
 
-        def initialize(api_key: ENV.fetch('XAI_API_KEY'), model: 'grok-3-mini')
+        def initialize(api_key: ENV.fetch('XAI_API_KEY'), model: 'grok-4-1-fast-reasoning')
           super()
           @api_key = api_key
           @model = model

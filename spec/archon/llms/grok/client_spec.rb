@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Archon::LLMs::Grok::Client do
-  subject(:client) { described_class.new(api_key: 'test-key', model: 'grok-3-mini') }
+  subject(:client) { described_class.new(api_key: 'test-key', model: 'grok-4-1-fast-reasoning') }
 
   let(:api_url) { 'https://api.x.ai/v1/chat/completions' }
 

@@ -9,7 +9,7 @@ module Archon
 
     DEFAULTS = {
       overflow: 10,
-      model: 'grok-3-mini',
+      model: 'grok-4-1-fast-reasoning',
       provider: 'grok'
     }.freeze
 

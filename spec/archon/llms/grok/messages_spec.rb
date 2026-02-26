@@ -8,15 +8,15 @@ RSpec.describe Archon::LLMs::Grok::Messages do
       messages = [{ role: 'user', content: 'hello' }]
       tools = [Archon::FinalAnswer::TOOL_SCHEMA]
 
-      body = described_class.build_request(model: 'grok-3-mini', messages: messages, tools: tools)
+      body = described_class.build_request(model: 'grok-4-1-fast-reasoning', messages: messages, tools: tools)
 
-      expect(body[:model]).to eq('grok-3-mini')
+      expect(body[:model]).to eq('grok-4-1-fast-reasoning')
       expect(body[:messages]).to eq(messages)
       expect(body[:tools]).to eq(tools)
     end
 
     it 'omits tools key when tools array is empty' do
-      body = described_class.build_request(model: 'grok-3-mini', messages: [], tools: [])
+      body = described_class.build_request(model: 'grok-4-1-fast-reasoning', messages: [], tools: [])
 
       expect(body).not_to have_key(:tools)
     end
