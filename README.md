@@ -44,6 +44,16 @@ Output is a single JSON line:
 | `--overflow N` | 10 | Max tool calls before auto-terminating |
 | `--model MODEL` | grok-4-1-fast-reasoning | Model name |
 | `--provider PROVIDER` | grok | LLM provider |
+| `--no-web-search` | | Disable web search (Grok only) |
+| `--no-x-search` | | Disable X search (Grok only) |
+
+### Grok search tools
+
+When using the Grok provider, `web_search` and `x_search` tools are automatically included in every request. Use `--no-web-search` and/or `--no-x-search` to disable them:
+
+```bash
+bundle exec ruby bin/archon --prompt-text "What is 2+2?" --no-web-search --no-x-search
+```
 
 ## Running tests
 
