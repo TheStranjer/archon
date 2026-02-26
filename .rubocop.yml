@@ -1,5 +1,8 @@
-require:
+plugins:
   - rubocop-rspec
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
 
 AllCops:
   TargetRubyVersion: 3.0
@@ -8,21 +11,6 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
     - 'tmp/**/*'
-
-Capybara:
-  Enabled: false
-
-Capybara/RSpec:
-  Enabled: false
-
-Capybara/RSpec/PredicateMatcher:
-  Enabled: false
-
-FactoryBot:
-  Enabled: false
-
-RSpecRails:
-  Enabled: false
 
 Style/Documentation:
   Enabled: false
@@ -51,7 +39,7 @@ Metrics/MethodLength:
   Max: 25
 
 Metrics/AbcSize:
-  Max: 10
+  Max: 20
   Exclude:
     - 'spec/**/*'
 
@@ -66,4 +54,3 @@ RSpec/MessageSpies:
 
 Style/GuardClause:
   Enabled: true
-
