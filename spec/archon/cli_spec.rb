@@ -47,7 +47,8 @@ RSpec.describe Archon::CLI do
       allow(Archon::LLMs::Grok::Client).to receive(:new).and_return(client)
       allow(Archon::Agent).to receive(:new).and_return(agent)
 
-      expect { cli.run }.to output("{\"outcome\":\"success\",\"value\":\"4\"}\n").to_stdout
+      expected = "{\"outcome\":\"success\",\"result_type\":null,\"value\":\"4\"}\n"
+      expect { cli.run }.to output(expected).to_stdout
     end
 
     it 'aborts when no prompt is provided' do

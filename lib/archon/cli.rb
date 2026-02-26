@@ -23,7 +23,9 @@ module Archon
       abort 'Error: No prompt provided' if prompt.nil? || prompt.strip.empty?
 
       result = execute(prompt)
-      $stdout.puts JSON.generate(outcome: result.outcome, value: result.value)
+      $stdout.puts JSON.generate(
+        outcome: result.outcome, result_type: result.result_type, value: result.value
+      )
     end
 
     private
