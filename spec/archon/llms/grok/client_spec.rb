@@ -5,20 +5,17 @@ require 'spec_helper'
 RSpec.describe Archon::LLMs::Grok::Client do
   subject(:client) { described_class.new(api_key: 'test-key', model: 'grok-4-1-fast-reasoning') }
 
-  let(:api_url) { 'https://api.x.ai/v1/chat/completions' }
+  let(:api_url) { 'https://api.x.ai/v1/responses' }
 
   describe '#chat' do
     let(:messages) { [{ role: 'user', content: 'hello' }] }
     let(:tools) { [Archon::FinalAnswer::TOOL_SCHEMA] }
     let(:response_body) do
       {
-        'choices' => [{
-          'message' => {
-            'role' => 'assistant',
-            'content' => 'Hello!',
-            'tool_calls' => nil
-          },
-          'finish_reason' => 'stop'
+        'status' => 'completed',
+        'output' => [{
+          'type' => 'message',
+          'content' => [{ 'type' => 'output_text', 'text' => 'Hello!' }]
         }]
       }
     end

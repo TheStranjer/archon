@@ -23,7 +23,7 @@ module Archon
 
         return handle_overflow if tool_call_count >= overflow
 
-        result = process_tool_calls(response, messages)
+        result = handle_response(response, messages)
         return result if result
       end
     end
@@ -34,6 +34,13 @@ module Archon
       msg = { role: 'assistant', content: response[:content] }
       msg[:tool_calls] = response[:tool_calls] if response[:tool_calls]
       msg
+    end
+
+    def handle_response(response, messages)
+      return handle_empty if empty_response?(response)
+      return content_as_result(response[:content]) unless response[:tool_calls]
+
+      process_tool_calls(response, messages)
     end
 
     def count_tool_calls(response)
@@ -67,6 +74,18 @@ module Archon
 
     def tool_result(tool_call_id, content)
       { role: 'tool', tool_call_id: tool_call_id, content: content }
+    end
+
+    def content_as_result(content)
+      FinalAnswer::Result.new(outcome: 'success', result_type: 'prose', value: content)
+    end
+
+    def empty_response?(response)
+      response[:content].nil? && response[:tool_calls].nil?
+    end
+
+    def handle_empty
+      FinalAnswer::Result.new(outcome: 'error', value: 'Empty response from LLM')
     end
 
     def handle_overflow

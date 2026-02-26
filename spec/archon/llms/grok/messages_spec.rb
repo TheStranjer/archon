@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Archon::LLMs::Grok::Messages do
   describe '.build_request' do
-    it 'builds a request body with messages and tools' do
+    it 'builds a request body with input and tools' do
       messages = [{ role: 'user', content: 'hello' }]
       tools = [Archon::FinalAnswer::TOOL_SCHEMA]
 
@@ -13,7 +13,7 @@ RSpec.describe Archon::LLMs::Grok::Messages do
       )
 
       expect(body[:model]).to eq('grok-4-1-fast-reasoning')
-      expect(body[:messages]).to eq(messages)
+      expect(body[:input]).to eq(messages)
       expect(body[:tools]).to include(*tools)
       expect(body[:tools]).to include({ type: 'web_search' }, { type: 'x_search' })
     end
@@ -55,11 +55,12 @@ RSpec.describe Archon::LLMs::Grok::Messages do
   end
 
   describe '.parse_response' do
-    it 'extracts message data from response body' do
+    it 'extracts text content from response output' do
       response_body = {
-        'choices' => [{
-          'message' => { 'role' => 'assistant', 'content' => 'hi', 'tool_calls' => nil },
-          'finish_reason' => 'stop'
+        'status' => 'completed',
+        'output' => [{
+          'type' => 'message',
+          'content' => [{ 'type' => 'output_text', 'text' => 'hi' }]
         }]
       }
 
@@ -67,11 +68,31 @@ RSpec.describe Archon::LLMs::Grok::Messages do
 
       expect(parsed[:role]).to eq('assistant')
       expect(parsed[:content]).to eq('hi')
+      expect(parsed[:tool_calls]).to be_nil
       expect(parsed[:finish_reason]).to eq('stop')
     end
 
-    it 'returns empty response for missing choices' do
-      parsed = described_class.parse_response({ 'choices' => [] })
+    it 'extracts function calls from response output' do
+      response_body = {
+        'status' => 'incomplete',
+        'output' => [{
+          'type' => 'function_call', 'call_id' => 'call_1',
+          'name' => 'final_answer', 'arguments' => '{"outcome":"success","value":"42"}'
+        }]
+      }
+      parsed = described_class.parse_response(response_body)
+      expected_call = {
+        'id' => 'call_1',
+        'function' => { 'name' => 'final_answer',
+                        'arguments' => '{"outcome":"success","value":"42"}' }
+      }
+
+      expect(parsed[:tool_calls]).to contain_exactly(expected_call)
+      expect(parsed[:finish_reason]).to eq('tool_calls')
+    end
+
+    it 'returns empty response for missing output' do
+      parsed = described_class.parse_response({ 'status' => 'completed' })
 
       expect(parsed[:role]).to eq('assistant')
       expect(parsed[:content]).to be_nil

@@ -34,6 +34,32 @@ RSpec.describe Archon::Agent do
       expect(result.outcome).to eq('overflow')
     end
 
+    it 'terminates with error when content and tool_calls are both nil' do
+      response = { role: 'assistant', content: nil, tool_calls: nil, finish_reason: 'stop' }
+      allow(client).to receive(:chat).and_return(response)
+
+      result = agent.run('Hello')
+
+      expect(result).to be_a(Archon::FinalAnswer::Result)
+      expect(result.outcome).to eq('error')
+      expect(result.value).to eq('Empty response from LLM')
+    end
+
+    it 'treats content-only responses as prose final answers' do
+      text_only = {
+        role: 'assistant', content: 'Here is the answer',
+        tool_calls: nil, finish_reason: 'stop'
+      }
+      allow(client).to receive(:chat).and_return(text_only)
+
+      result = agent.run('Hello')
+
+      expect(result).to be_a(Archon::FinalAnswer::Result)
+      expect(result.outcome).to eq('success')
+      expect(result.result_type).to eq('prose')
+      expect(result.value).to eq('Here is the answer')
+    end
+
     it 'loops until final_answer is called' do
       non_final = tool_call_response('other_tool', '{}')
       final = tool_call_response('final_answer', '{"outcome":"success","value":"done"}',

@@ -13,7 +13,7 @@ RSpec.describe Archon::ToolRegistry do
 
   describe '#register' do
     it 'adds a new tool' do
-      schema = { type: 'function', function: { name: 'test' } }
+      schema = { type: 'function', name: 'test' }
       registry.register('test', schema)
 
       expect(registry.registered?('test')).to be true
@@ -26,7 +26,7 @@ RSpec.describe Archon::ToolRegistry do
     end
 
     it 'includes newly registered tools' do
-      schema = { type: 'function', function: { name: 'test' } }
+      schema = { type: 'function', name: 'test' }
       registry.register('test', schema)
 
       expect(registry.schemas.length).to eq(2)

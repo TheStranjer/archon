@@ -11,28 +11,48 @@ module Archon
 
           body = {
             model: model,
-            messages: messages
+            input: messages,
+            tool_choice: :required
           }
           body[:tools] = all_tools unless all_tools.empty?
           body
         end
 
         def self.parse_response(response_body)
-          choice = response_body.dig('choices', 0)
-          return empty_response if choice.nil?
+          output = response_body['output'] || []
+          content = extract_content(output)
+          tool_calls = extract_tool_calls(output)
 
-          message = choice['message']
           {
-            role: message['role'],
-            content: message['content'],
-            tool_calls: message['tool_calls'],
-            finish_reason: choice['finish_reason']
+            role: 'assistant',
+            content: content,
+            tool_calls: tool_calls.empty? ? nil : tool_calls,
+            finish_reason: response_body['status'] == 'completed' ? 'stop' : 'tool_calls'
           }
         end
 
-        def self.empty_response
-          { role: 'assistant', content: nil, tool_calls: nil, finish_reason: 'stop' }
+        def self.extract_content(output)
+          texts = output.filter_map do |item|
+            next unless item['type'] == 'message'
+
+            item['content']&.filter_map do |block|
+              block['text'] if %w[text output_text].include?(block['type'])
+            end&.join
+          end
+          combined = texts.join
+          combined.empty? ? nil : combined
         end
+
+        def self.extract_tool_calls(output)
+          output.select { |item| item['type'] == 'function_call' }.map do |item|
+            {
+              'id' => item['call_id'],
+              'function' => { 'name' => item['name'], 'arguments' => item['arguments'] }
+            }
+          end
+        end
+
+        private_class_method :extract_content, :extract_tool_calls
       end
     end
   end

@@ -7,7 +7,7 @@ module Archon
   module LLMs
     module Grok
       class Client < Base
-        API_URL = 'https://api.x.ai/v1/chat/completions'
+        API_URL = 'https://api.x.ai/v1/responses'
 
         def initialize(
           api_key: ENV.fetch('XAI_API_KEY'),

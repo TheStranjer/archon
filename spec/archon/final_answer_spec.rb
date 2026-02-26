@@ -6,7 +6,7 @@ RSpec.describe Archon::FinalAnswer do
   describe '::TOOL_SCHEMA' do
     it 'defines a function tool schema' do
       expect(described_class::TOOL_SCHEMA[:type]).to eq(:function)
-      expect(described_class::TOOL_SCHEMA[:function][:name]).to eq(:final_answer)
+      expect(described_class::TOOL_SCHEMA[:name]).to eq(:final_answer)
     end
   end
 
